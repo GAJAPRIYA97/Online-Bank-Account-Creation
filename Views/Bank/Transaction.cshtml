@@ -1,0 +1,165 @@
+﻿@{
+    ViewBag.Title = "Transaction";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Withdraw / Deposit</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-image: linear-gradient(135deg, darkblue, red);
+            margin: 0;
+            padding: 40px 16px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-box {
+            background: #fff;
+            padding: 32px;
+            border-radius: 12px;
+            max-width: 520px;
+            width: 100%;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 24px;
+            color: #0B144A;
+            font-size: 24px;
+        }
+
+        label {
+            font-weight: 600;
+            margin-top: 18px;
+            color: #333;
+            display: block;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            margin-top: 6px;
+            margin-bottom: 16px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: #f9f9f9;
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+
+            input:focus,
+            select:focus {
+                outline: none;
+                border-color: #007bff;
+                background-color: #eef9ff;
+                box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+            }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            font-size: 17px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 12px;
+        }
+
+            button:hover {
+                background-color: #0056b3;
+            }
+
+        .info, .error {
+            margin-top: 20px;
+            border-radius: 6px;
+            padding: 14px;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .info {
+            background-color: #e9f7ef;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        span {
+            color: red;
+            margin-left: 4px;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="form-box">
+        <h2>Withdraw / Deposit</h2>
+
+        @using (Html.BeginForm("Transaction", "Bank", FormMethod.Post, new { autocomplete = "off", id = "transactionForm" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <!-- Account Number -->
+            <label for="accountNumber">Account Number <span>*</span></label>
+            <input type="text" name="accountNumber" id="accountNumber" required
+                   pattern="^[0-9]{9,18}$" title="Enter a valid account number (9-18 digits)" class="form-control" autocomplete="off" />
+
+            <!-- Transaction Type -->
+            <label for="actionType">Transaction Type <span>*</span></label>
+            <select name="actionType" id="actionType" required class="form-control">
+                <option value="">-- Select --</option>
+                <option value="Deposit">Deposit</option>
+                <option value="Withdraw">Withdraw</option>
+            </select>
+
+            <!-- Amount -->
+            <label for="amount">Amount <span>*</span></label>
+            <input type="number" name="amount" id="amount" min="1" step="0.01" required
+                   title="Enter a valid amount" class="form-control" autocomplete="off" />
+
+            <button type="submit" class="btn-submit">Submit</button>
+        }
+
+        <!-- Error message -->
+        @if (ViewBag.Error != null)
+        {
+            <div class="error" style="color: red; margin-top: 10px;">
+                @ViewBag.Error
+            </div>
+        }
+
+        <!-- Success info -->
+        @if (ViewBag.CustomerName != null)
+        {
+            <div class="info" style="margin-top: 15px; border: 1px solid #ccc; padding: 10px;">
+                <p><strong>Customer Name:</strong> @ViewBag.CustomerName</p>
+                <p><strong>Account Type:</strong> @ViewBag.AccountType</p>
+                <p><strong>Updated Balance:</strong> ₹@ViewBag.Balance</p>
+            </div>
+        }
+    </div>
+</body>
+
+</html>
