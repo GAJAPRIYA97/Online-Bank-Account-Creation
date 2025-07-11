@@ -1,0 +1,228 @@
+﻿@model MiniBankApp.Models.BranchBankDetails
+@{
+    Layout = null;
+}
+
+<head>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-image: linear-gradient(135deg, darkblue, red);
+            padding: 40px 16px;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .form-container {
+            max-width: 520px;
+            width: 100%;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 24px;
+            color: #0B144A;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-top: 18px;
+            color: #0B144A;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            margin-top: 6px;
+            font-size: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: #f8f8f8;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+            input:focus,
+            select:focus {
+                outline: none;
+                border-color: #007bff;
+                background-color: #eef9ff;
+                box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+            }
+
+            input:invalid,
+            select:invalid {
+                border-color: #dc3545;
+            }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+            padding-left: 2px;
+        }
+
+            .radio-group label {
+                font-weight: normal;
+                color: #333;
+                font-size: 15px;
+                display: flex;
+                align-items: center;
+            }
+
+        input[type="radio"] {
+            margin-right: 6px;
+            transform: scale(1.1);
+            accent-color: #007bff;
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 32px;
+        }
+
+            .buttons-container button {
+                width: 48%;
+                padding: 14px 0;
+                font-size: 16px;
+                font-weight: 600;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: background-color 0.3s, opacity 0.2s ease;
+            }
+
+                .buttons-container button.back {
+                    background-color: #6c757d;
+                    color: white;
+                }
+
+                .buttons-container button.next {
+                    background-color: #007bff;
+                    color: white;
+                }
+
+                .buttons-container button:hover {
+                    opacity: 0.9;
+                }
+
+        span {
+            color: red;
+            margin-left: 4px;
+        }
+
+        .error {
+            color: red;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="form-container">
+        <h2>Branch Selection &amp; Other Bank Details</h2>
+
+        @using (Html.BeginForm("BranchSelection", "Bank", FormMethod.Post, new { autocomplete = "off", id = "branchSelectionForm" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <!-- Preferred Branch -->
+            <label for="PreferredBranch">Select Preferred Branch <span>*</span></label>
+            @Html.DropDownListFor(m => m.PreferredBranch,
+                new SelectList(new[] { "Anna Nagar", "T Nagar" }),
+                "-- Select Branch --",
+                new { @class = "form-control", required = "required" })
+            @Html.ValidationMessageFor(m => m.PreferredBranch, "", new { @class = "error" })
+
+            <!-- Has Other Bank Account -->
+            <label>Having an account with another bank? <span>*</span></label>
+            <div class="radio-group">
+                <label>
+                    @Html.RadioButtonFor(m => m.HasOtherBankAccount, "Yes", new { required = "required" }) Yes
+                </label>
+                <label>
+                    @Html.RadioButtonFor(m => m.HasOtherBankAccount, "No") No
+                </label>
+            </div>
+            @Html.ValidationMessageFor(m => m.HasOtherBankAccount, "", new { @class = "error" })
+
+            <!-- IFSC Code -->
+            <label for="IFSCCode">IFSC Code <span id="ifscRequired">*</span></label>
+            @Html.TextBoxFor(m => m.IFSCCode, new
+            {
+                @class = "form-control",
+                pattern = "^[A-Z]{4}0[A-Z0-9]{6}$",
+                title = "Enter valid IFSC code (e.g., SBIN0001234)",
+                autocomplete = "off"
+            })
+            @Html.ValidationMessageFor(m => m.IFSCCode, "", new { @class = "error" })
+
+            <!-- Account Type -->
+            <label for="AccountType">Account Type</label>
+            @Html.TextBoxFor(m => m.AccountType, new
+            {
+                @class = "form-control",
+                placeholder = "e.g., Savings / Current",
+                autocomplete = "off"
+            })
+
+            <!-- Account Number -->
+            <label for="AccountNumber">Account Number</label>
+            @Html.TextBoxFor(m => m.AccountNumber, new
+            {
+                @class = "form-control",
+                pattern = "^[0-9]{9,18}$",
+                title = "Enter a valid account number (9–18 digits)",
+                autocomplete = "off"
+            })
+            @Html.ValidationMessageFor(m => m.AccountNumber, "", new { @class = "error" })
+
+            <!-- Navigation Buttons -->
+            <div class="buttons-container">
+                <button type="button" class="back" onclick="location.href='@Url.Action("PermanentAdd", "Bank")'">Back</button>
+                <button type="submit" class="next">Next</button>
+            </div>
+        }
+    </div>
+
+    <script>
+        // Optional: disable IFSC/account fields unless "Yes" is selected
+        document.addEventListener("DOMContentLoaded", function () {
+            const yesRadio = document.querySelector("input[type='radio'][value='Yes']");
+            const noRadio = document.querySelector("input[type='radio'][value='No']");
+            const ifsc = document.querySelector("#IFSCCode");
+            const acctType = document.querySelector("#AccountType");
+            const acctNumber = document.querySelector("#AccountNumber");
+
+            function toggleBankFields() {
+                const isYes = yesRadio.checked;
+                ifsc.required = isYes;
+                acctType.required = isYes;
+                acctNumber.required = isYes;
+
+                ifsc.disabled = !isYes;
+                acctType.disabled = !isYes;
+                acctNumber.disabled = !isYes;
+            }
+
+            yesRadio.addEventListener("change", toggleBankFields);
+            noRadio.addEventListener("change", toggleBankFields);
+            toggleBankFields(); // initialize on load
+        });
+    </script>
+</body>

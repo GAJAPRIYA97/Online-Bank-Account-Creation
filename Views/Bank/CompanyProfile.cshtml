@@ -1,0 +1,196 @@
+﻿@model MiniBankApp.Models.CompanyProfile
+    @{ Layout = null;}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Company Profile</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-image: linear-gradient(135deg, darkblue, red);
+            margin: 0;
+            padding: 40px 16px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        form {
+            background: #fff;
+            max-width: 520px;
+            width: 100%;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 24px;
+            color: #0B144A;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #0B144A;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px;
+            font-size: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: #f8f8f8;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        select {
+            appearance: none;
+            background-color: #f8f8f8;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6'%3E%3Cpath fill='%230B144A' d='M0 0l4 6 4-6z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 10px;
+        }
+
+            input:focus,
+            select:focus {
+                outline: none;
+                border-color: #007bff;
+                background-color: #eef9ff;
+                box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+            }
+
+            input:invalid, select:invalid {
+                border-color: #dc3545;
+            }
+
+        .error {
+            color: red;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .button-group {
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        button {
+            padding: 10px 22px;
+            font-size: 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 0 8px;
+        }
+
+        .btn-back {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-next {
+            background-color: #007bff;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+    </style>
+
+</head>
+<body>
+    @using (Html.BeginForm("CompanyProfile", "Bank", FormMethod.Post, new { autocomplete = "off", id = "companyProfileForm" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <h2>Company Profile</h2>
+
+        <!-- Category Dropdown -->
+        <div class="form-group">
+            @Html.LabelFor(m => m.Category)
+            @Html.DropDownListFor(m => m.Category, new SelectList(new[] {
+                new SelectListItem { Text = "Select Category…", Value = "" },
+                new SelectListItem { Text = "Supplier of goods", Value = "Supplier of goods" },
+                new SelectListItem { Text = "Service", Value = "Service" }
+            }, "Value", "Text"), new
+            {
+                @class = "form-control",
+                required = "required"
+            })
+            @Html.ValidationMessageFor(m => m.Category, "", new { @class = "error" })
+        </div>
+
+        <!-- Nature of Business Dropdown -->
+        <div class="form-group">
+            @Html.LabelFor(m => m.NatureOfBusiness)
+            @Html.DropDownListFor(m => m.NatureOfBusiness, new SelectList(new[] {
+                new SelectListItem { Text = "Select Nature…", Value = "" },
+                new SelectListItem { Text = "Manufacturing", Value = "Manufacturing" },
+                new SelectListItem { Text = "IT", Value = "IT" }
+            }, "Value", "Text"), new
+            {
+                @class = "form-control",
+                required = "required"
+            })
+            @Html.ValidationMessageFor(m => m.NatureOfBusiness, "", new { @class = "error" })
+        </div>
+
+        <!-- Source of Funds -->
+        <div class="form-group">
+            @Html.LabelFor(m => m.SourceOfFunds)
+            @Html.TextBoxFor(m => m.SourceOfFunds, new
+            {
+                @class = "form-control",
+                required = "required",
+                pattern = "^[A-Za-z0-9 ,.-]{2,100}$",
+                title = "Enter valid source of funds (letters, numbers, spaces, commas, dots, dashes)",
+                autocomplete = "off"
+            })
+            @Html.ValidationMessageFor(m => m.SourceOfFunds, "", new { @class = "error" })
+        </div>
+
+        <!-- Annual Turnover -->
+        <div class="form-group">
+            @Html.LabelFor(m => m.AnnualTurnover)
+            @Html.TextBoxFor(m => m.AnnualTurnover, new
+            {
+                type = "number",
+                min = "0",
+                step = "0.01",
+                @class = "form-control",
+                required = "required",
+                autocomplete = "off"
+            })
+            @Html.ValidationMessageFor(m => m.AnnualTurnover, "", new { @class = "error" })
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="button-group">
+            <button type="button" class="btn-back" onclick="location.href='@Url.Action("EntityProfile", "Bank")'">Back</button>
+            <button type="submit" class="btn-next">Next</button>
+        </div>
+    }
+
+</body>
+</html>

@@ -1,0 +1,147 @@
+﻿@model MiniBankApp.Models.FundTransaction
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Add Funds</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f7f7f7;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 400px;
+            background: #fff;
+            padding: 28px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        h2, h3 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-top: 16px;
+            color: #333;
+        }
+
+        select, input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px 12px;
+            margin-top: 6px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: #f9f9f9;
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+
+            select:focus, input:focus {
+                outline: none;
+                border-color: #007bff;
+                background-color: #eef9ff;
+                box-shadow: 0 0 0 3px rgba(0,123,255,0.2);
+            }
+
+        span {
+            color: red;
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 32px;
+            gap: 10px;
+        }
+
+            .buttons-container button {
+                flex: 1;
+                padding: 12px 0;
+                font-size: 1rem;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: opacity 0.2s ease-in-out;
+            }
+
+            .buttons-container .pay {
+                background-color: #28a745;
+                color: #fff;
+            }
+
+            .buttons-container .back {
+                background-color: #6c757d;
+                color: #fff;
+            }
+
+            .buttons-container .next {
+                background-color: #007bff;
+                color: #fff;
+            }
+
+            .buttons-container button:hover {
+                opacity: 0.9;
+            }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Add Funds</h2>
+        <h3>Selected Scheme</h3>
+
+        @using (Html.BeginForm("AddFund", "Bank", FormMethod.Post, new { autocomplete = "off", id = "addFundForm" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <!-- Scheme Dropdown -->
+            <label for="Scheme">Scheme <span>*</span></label>
+            @Html.DropDownListFor(m => m.Scheme,
+                new SelectList(new[] { "General Scheme", "Aagaram Scheme", "Flexi Scheme" }),
+                "-- select --",
+                new { @class = "form-control", required = "required" })
+            @Html.ValidationMessageFor(m => m.Scheme, "", new { @class = "error" })
+
+            <!-- Amount Input -->
+            <label for="Amount">Enter Amount <span>*</span></label>
+            @Html.TextBoxFor(m => m.Amount, new
+            {
+                @class = "form-control",
+                type = "number",
+                step = "0.01",
+                min = "1",
+                required = "required",
+                title = "Amount must be greater than 0",
+                autocomplete = "off"
+            })
+            @Html.ValidationMessageFor(m => m.Amount, "", new { @class = "error" })
+
+            <!-- Buttons -->
+            <div class="buttons-container">
+                <button type="submit" class="pay">Pay Now</button>
+                <button type="button" class="back" onclick="location.href='@Url.Action("BranchSelection", "Bank")'">Back</button>
+                <button type="button" class="next" onclick="location.href='@Url.Action("Success", "Bank")'">Next</button>
+            </div>
+        }
+    </div>
+</body>
+</html>

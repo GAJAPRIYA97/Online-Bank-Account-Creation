@@ -1,0 +1,191 @@
+﻿@model MiniBankApp.Models.IndividualProfile
+@{ Layout = null; }
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Individual Profile</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-image: linear-gradient(135deg, darkblue, red);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        form {
+            background: #fff;
+            max-width: 520px;
+            width: 100%;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+            form h1 {
+                text-align: center;
+                color: #0B144A;
+                margin-bottom: 24px;
+            }
+
+        label {
+            display: block;
+            margin-top: 18px;
+            font-weight: bold;
+            color: #0B144A;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"] {
+            width: 100%;
+            padding: 10px 12px;
+            margin-top: 6px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: border 0.3s;
+        }
+
+        input:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+            .radio-group label {
+                display: flex;
+                align-items: center;
+                font-size: 1rem;
+                color: #333;
+            }
+
+            .radio-group input[type="radio"] {
+                margin-right: 8px;
+                transform: scale(1.1);
+                accent-color: #007BFF;
+            }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 10px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+            button:hover {
+                background-color: #0056b3;
+            }
+
+        .error {
+            color: red;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        span {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+
+</head>
+<body>
+    @using (Html.BeginForm("Individual", "Bank", FormMethod.Post, new { id = "individualForm", autocomplete = "off", novalidate = "novalidate" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <h1>Individual Profile</h1>
+
+        <!-- Father's Name -->
+        <label>Father's Name <span>*</span></label>
+        @Html.TextBoxFor(m => m.FatherName, new
+        {
+            @class = "form-control",
+            placeholder = "e.g. Ravi Kumar",
+            required = "required",
+            pattern = "^[A-Za-z ]+$",
+            title = "Only alphabets and spaces allowed",
+            autocomplete = "off"
+        })
+        @Html.ValidationMessageFor(m => m.FatherName, "", new { @class = "error" })
+
+        <!-- Mother's Maiden Name -->
+        <label>Mother's Maiden Name <span>*</span></label>
+        @Html.TextBoxFor(m => m.MotherMaidenName, new
+        {
+            @class = "form-control",
+            placeholder = "e.g. Sita Devi",
+            required = "required",
+            pattern = "^[A-Za-z ]+$",
+            title = "Only alphabets and spaces allowed",
+            autocomplete = "off"
+        })
+        @Html.ValidationMessageFor(m => m.MotherMaidenName, "", new { @class = "error" })
+
+        <!-- Marital Status -->
+        <fieldset>
+            <legend>Marital Status <span>*</span></legend>
+            <div class="radio-group">
+                <label>
+                    @Html.RadioButtonFor(m => m.MaritalStatus, "Married", new { required = "required" }) Married
+                </label>
+                <label>
+                    @Html.RadioButtonFor(m => m.MaritalStatus, "Single") Single
+                </label>
+                <label>
+                    @Html.RadioButtonFor(m => m.MaritalStatus, "Others") Others
+                </label>
+            </div>
+            @Html.ValidationMessageFor(m => m.MaritalStatus, "", new { @class = "error" })
+        </fieldset>
+
+        <!-- Annual Income -->
+        <label>Annual Income (₹) <span>*</span></label>
+        @Html.TextBoxFor(m => m.AnnualIncome, new
+        {
+            @class = "form-control",
+            placeholder = "e.g. 500000",
+            required = "required",
+            pattern = "^[0-9]{4,9}$",
+            title = "Enter income in numbers only (min 4 digits)",
+            inputmode = "numeric",
+            autocomplete = "off"
+        })
+        @Html.ValidationMessageFor(m => m.AnnualIncome, "", new { @class = "error" })
+
+        <!-- Navigation -->
+        <div class="button-group">
+            <button type="button" onclick="location.href='@Url.Action("PanandAadhar", "Bank")'">Back</button>
+            <button type="submit">Next</button>
+        </div>
+    }
+
+</body>
+</html>

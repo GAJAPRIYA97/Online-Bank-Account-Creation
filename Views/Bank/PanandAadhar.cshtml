@@ -1,0 +1,192 @@
+﻿@model MiniBankApp.Models.PanAadhaarInfo
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAN & Aadhaar Verification</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: linear-gradient(135deg, darkblue, red);
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 520px;
+            background-color: #fff;
+            padding: 40px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 32px;
+            color: #333;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 6px;
+            display: block;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+
+        input:focus {
+            border-color: #0066cc;
+            outline: none;
+        }
+
+        .row {
+            display: flex;
+            gap: 16px;
+        }
+
+        .row > div {
+            flex: 1;
+        }
+
+        .aadhaar-container {
+            position: relative;
+        }
+
+        .toggle-visibility {
+            position: absolute;
+            right: 12px;
+            top: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .consent-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 24px;
+            font-size: 15px;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 15px;
+            cursor: pointer;
+            background-color: white;
+            color: black;
+            border: 1px solid #ccc;
+            transition: all 0.2s ease;
+            text-align: center;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .button:hover {
+            background-color: #0066cc;
+            color: white;
+        }
+
+      
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>PAN & Aadhaar Details</h1>
+        @using (Html.BeginForm("PanandAadhar", "Bank", FormMethod.Post, new { id = "verificationForm", autocomplete = "off" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <label for="name">Enter Name (As Per PAN)</label>
+            @Html.TextBoxFor(m => m.Name, new { id = "name", maxlength = "40", required = "required", pattern = "^[A-Za-z ]+$", autocomplete = "off" })
+
+            <div class="row">
+                <div>
+                    <label for="pan">Enter PAN Number</label>
+                    @Html.TextBoxFor(m => m.PAN, new { id = "pan", maxlength = "10", required = "required", pattern = "[A-Z]{5}[0-9]{4}[A-Z]{1}", autocomplete = "off" })
+                </div>
+                <div>
+                    <label for="dob">Enter DOB</label>
+                    @Html.TextBoxFor(m => m.DOB, new { id = "dob", type = "date", required = "required", max = DateTime.Now.ToString("yyyy-MM-dd"), autocomplete = "off" })
+                </div>
+            </div>
+
+            <label for="aadhaar">Enter Aadhaar/Virtual ID</label>
+            <div class="aadhaar-container">
+                @Html.PasswordFor(m => m.Aadhaar, new { id = "aadhaar", maxlength = "12", required = "required", pattern = @"\d{12}", autocomplete = "off" })
+                <button type="button" class="toggle-visibility" id="toggleAadhaar">👁</button>
+            </div>
+
+            <label class="consent-label">
+                <input type="checkbox" id="consent" name="consent" required /> I agree to share my Aadhaar for verification
+            </label>
+
+            <div class="button-group">
+                <a href="@Url.Action("KYCverification", "Bank")" class="button">Back</a>
+                <button type="button" id="nextBtn" class="button">Next</button>
+            </div>
+
+            <button type="submit" id="realSubmitBtn" style="display: none;"></button>
+        }
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggleAadhaar = document.getElementById('toggleAadhaar');
+            const aadhaarInput = document.getElementById('aadhaar');
+
+            toggleAadhaar.addEventListener('mousedown', () => aadhaarInput.type = 'text');
+            toggleAadhaar.addEventListener('mouseup', () => aadhaarInput.type = 'password');
+
+            const nextBtn = document.getElementById('nextBtn');
+            const realSubmitBtn = document.getElementById('realSubmitBtn');
+
+            nextBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                const name = document.getElementById('name').value.trim();
+                const pan = document.getElementById('pan').value.trim();
+                const dob = document.getElementById('dob').value;
+                const aadhaar = document.getElementById('aadhaar').value.trim();
+                const consent = document.getElementById('consent').checked;
+
+                if (!name || !pan || !dob || aadhaar.length !== 12 || !consent) {
+                    alert("Please fill all fields correctly and agree to the consent.");
+                    return;
+                }
+
+                realSubmitBtn.click(); // Submit the form
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Create Account</title>
+    <script src="https://kit.fontawesome.com/33f1b1a165.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            background-image: linear-gradient(135deg, darkblue, red);
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            padding: 30px;
+        }
+
+        i {
+            padding: 30px;
+        }
+
+        .head {
+            text-align: center;
+            margin-top: 100px;
+        }
+
+            .head h1 {
+                font-family: 'Times New Roman', Times, serif;
+                font-size: 36px;
+                color: #fff;
+            }
+
+            .head h2 {
+                font-size: 24px;
+                color: #fff;
+                margin-top: 10px;
+            }
+
+        .scheme {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin: 40px auto;
+            max-width: 1200px;
+        }
+
+            .scheme > div {
+                flex: 1 1 300px;
+                background: #f9f9f9;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                padding: 20px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+                transition: transform 0.2s, box-shadow 0.3s;
+            }
+
+                .scheme > div:hover {
+                    transform: translateY(-4px);
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                }
+
+            .scheme h1 {
+                font-size: 1.5rem;
+                margin-bottom: 0.8rem;
+                text-align: center;
+                color: #333;
+            }
+
+            .scheme p {
+                font-size: 1rem;
+                line-height: 1.5;
+                text-align: justify;
+                color: #444;
+            }
+
+            .scheme form {
+                margin-top: 15px;
+                text-align: center;
+            }
+
+            .scheme button {
+                width: 100%;
+                padding: 10px;
+                border: none;
+                background: #007BFF;
+                color: #fff;
+                font-size: 1rem;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background 0.3s, transform 0.3s;
+            }
+
+                .scheme button:hover {
+                    background: #0056b3;
+                    transform: translateY(-2px);
+                }
+
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="head">
+        <h1>STATE BANK OF INDIA</h1>
+        <h2>Choose Your Scheme</h2>
+    </div>
+
+    <div class="scheme">
+        <!-- General Scheme -->
+        <div class="genaral">
+            <h1>General Scheme</h1>
+            <center>
+                <i class="fa-solid fa-building-columns fa-beat fa-2xl" style="color: #74C0FC;"></i>
+            </center>
+            <p>
+                A General bank account—often a Basic Savings Bank Deposit Account (BSBDA)—is a no-frills, simplified savings account designed
+                for universal banking access. It typically has no minimum balance requirement, reduced documentation/KYC, free debit card services,
+                and enables direct benefit transfers and social-security scheme linkage.
+            </p>
+            <form method="post" action="@Url.Action("SelectAccountType", "Bank")">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="accountType" value="General Scheme" />
+                <button type="submit">Create Account</button>
+            </form>
+        </div>
+
+        <!-- Flexi Scheme -->
+        <div class="flexi">
+            <h1>Flexi Scheme</h1>
+            <center>
+                <i class="fa-solid fa-building-columns fa-beat fa-2xl" style="color: #74C0FC;"></i>
+            </center>
+            <p>
+                A Flexi scheme blends savings/current account with fixed deposit functionality. When the balance exceeds a threshold,
+                funds are auto-swept into a fixed deposit for higher returns; if needed, reverse-sweep automatically moves funds back
+                to the savings account—offering both liquidity and better interest.
+            </p>
+            <form method="post" action="@Url.Action("SelectAccountType", "Bank")">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="accountType" value="Flexi Scheme" />
+                <button type="submit">Create Account</button>
+            </form>
+        </div>
+
+        <!-- Aagaram Scheme -->
+        <div class="agaram">
+            <h1>Aagaram Scheme</h1>
+            <center>
+                <i class="fa-solid fa-building-columns fa-beat fa-2xl" style="color: #74C0FC;"></i>
+            </center>
+            <p>
+                "Aagaram" translates to “the Start” in Tamil. This current account scheme, offered by Tamilnad Mercantile Bank, targets
+                small vendors and micro‑enterprises to bring them into formal banking by providing basic digital banking access and
+                streamlined account services.
+            </p>
+            <form method="post" action="@Url.Action("SelectAccountType", "Bank")">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="accountType" value="Aagaram Scheme" />
+                <button type="submit">Create Account</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

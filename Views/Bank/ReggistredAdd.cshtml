@@ -1,0 +1,180 @@
+﻿@{Layout = null;
+
+}
+<head>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-image: linear-gradient(135deg, darkblue, red);
+            padding: 40px 16px;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .form-container {
+            max-width: 520px;
+            width: 100%;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 24px;
+            color: #0B144A;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-top: 18px;
+            color: #0B144A;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            margin-top: 6px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+            background: #f8f8f8;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+            input:focus,
+            select:focus {
+                outline: none;
+                border-color: #007bff;
+                background-color: #eef9ff;
+                box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+            }
+
+            input:invalid,
+            select:invalid {
+                border-color: #dc3545;
+            }
+
+        .two-col {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+
+            .two-col > div {
+                flex: 1 1 48%;
+            }
+
+        .buttons-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 32px;
+        }
+
+            .buttons-container button {
+                width: 48%;
+                padding: 12px 0;
+                font-size: 16px;
+                font-weight: 600;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: background-color 0.3s, opacity 0.2s ease;
+            }
+
+                .buttons-container button.back {
+                    background-color: #6c757d;
+                    color: white;
+                }
+
+                .buttons-container button.next {
+                    background-color: #007bff;
+                    color: white;
+                }
+
+                .buttons-container button:hover {
+                    opacity: 0.9;
+                }
+
+        span {
+            color: red;
+            margin-left: 4px;
+        }
+
+        .error {
+            font-size: 13px;
+            color: red;
+            margin-top: 4px;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="form-container">
+        <h2>Registered Address (Business Location)</h2>
+
+        @using (Html.BeginForm("RegisteredAddress", "Bank", FormMethod.Post, new { autocomplete = "off", id = "registeredAddressForm" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <!-- Address Line 1 -->
+            <label for="AddressLine1">Address Line 1 <span>*</span></label>
+            <input type="text" name="AddressLine1" id="AddressLine1" class="form-control"
+                   required pattern="^[A-Za-z0-9 ,.-]{3,100}$" title="Please enter a valid address" autocomplete="off" />
+
+            <!-- Address Line 2 -->
+            <label for="AddressLine2">Address Line 2</label>
+            <input type="text" name="AddressLine2" id="AddressLine2" class="form-control"
+                   pattern="^[A-Za-z0-9 ,.-]{0,100}$" title="Optional secondary address line" autocomplete="off" />
+
+            <!-- PIN and City -->
+            <div class="two-col">
+                <div>
+                    <label for="Pincode">PIN Code <span>*</span></label>
+                    <input type="text" name="Pincode" id="Pincode" class="form-control"
+                           pattern="^[1-9][0-9]{5}$" required title="Enter a valid 6-digit PIN code" autocomplete="off" />
+                </div>
+                <div>
+                    <label for="City">City <span>*</span></label>
+                    <select name="City" id="City" class="form-control" required>
+                        <option value="">--select--</option>
+                        <option value="Chennai">Chennai</option>
+                        <option value="Madurai">Madurai</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- State -->
+            <label for="State">State <span>*</span></label>
+            <select name="State" id="State" class="form-control" required>
+                <option value="">--select--</option>
+                <option value="Tamil Nadu">Tamil Nadu</option>
+            </select>
+
+            <!-- Document Proof -->
+            <label for="DocumentProof">Document Proof <span>*</span></label>
+            <select name="DocumentProof" id="DocumentProof" class="form-control" required>
+                <option value="">--select--</option>
+                <option value="GST">GST</option>
+                <option value="Driving License">Driving License</option>
+            </select>
+
+            <!-- Navigation Buttons -->
+            <div class="buttons-container">
+                <button type="button" class="back" onclick="location.href='@Url.Action("CompanyProfile", "Bank")'">Back</button>
+                <button type="submit" class="next">Next</button>
+            </div>
+        }
+    </div>
+</body>

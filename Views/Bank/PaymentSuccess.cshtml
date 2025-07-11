@@ -1,0 +1,51 @@
+﻿
+@{
+    ViewBag.Title = "PaymentSuccess";
+}
+
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Successful</title>
+    <style>
+        body {
+            font-family: Arial;
+            background-color: #f4f4f4;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .popup {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            display: inline-block;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+
+            .popup h2 {
+                color: green;
+                margin-bottom: 20px;
+            }
+
+            .popup p {
+                font-size: 18px;
+                margin: 10px 0;
+            }
+    </style>
+</head>
+<body>
+    <div class="info">
+        <p><strong>🎉 Account Created Successfully!</strong></p>
+        <p><strong>Account Number:</strong> @TempData["AccountNumber"]</p>
+        <p><strong>Customer Name:</strong> @TempData["CustomerName"]</p>
+        <p><strong>Account Type:</strong> @TempData["AccountType"]</p>
+        <p><strong>Balance:</strong> ₹@TempData["Balance"]</p>
+    </div>
+
+</body>
+</html>
+

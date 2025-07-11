@@ -1,0 +1,118 @@
+﻿@{
+    ViewBag.Title = "AccountType";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mini Bank App</title>
+    <script src="https://kit.fontawesome.com/33f1b1a165.js" crossorigin="anonymous"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .accounttype {
+            position: relative;
+            display: flex;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background-image: linear-gradient(135deg, darkblue, red);
+            color: white;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+            .accounttype h2 {
+                margin-bottom: 1.5rem;
+                font-size: 1.6rem;
+            }
+
+            .accounttype form {
+                width: 100%;
+                max-width: 280px;
+                margin: 0.5rem 0;
+            }
+
+            .accounttype button {
+                width: 100%;
+                padding: 0.75rem;
+                font-size: 1rem;
+                border: 2px solid #0B144A;
+                background: transparent;
+                border-radius: 6px;
+                color: black;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+                transition: background 0.2s, color 0.2s;
+            }
+
+                .accounttype button:hover {
+                    background: #0B144A;
+                    color: #fff;
+                }
+
+                .accounttype button i {
+                    font-size: 1.1rem;
+                }
+
+            .accounttype::after,
+            .accounttype::before {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                width: 60%;
+                height: 100%;
+                border-radius: 100% 50%;
+            }
+
+            .accounttype::after {
+                background: #0B144A;
+                transform: translate(80%, 60%);
+                right: 0;
+            }
+
+            .accounttype::before {
+                background: #FFE5EC;
+                transform: translate(-5%, 40%);
+                left: 0;
+                z-index: -1;
+            }
+    </style>
+</head>
+<body>
+    <div class="accounttype">
+        <h2>Choose Your Account Type</h2>
+
+        @using (Html.BeginForm("SelectAccountType", "Bank", FormMethod.Post))
+        {
+            <input type="hidden" name="accountType" value="Individual" />
+            <button type="submit"><i class="fa-solid fa-user"></i> Individual</button>
+        }
+
+        @using (Html.BeginForm("SelectAccountType", "Bank", FormMethod.Post))
+        {
+            <input type="hidden" name="accountType" value="Sole Proprietorship" />
+            <button type="submit"><i class="fa-solid fa-user"></i> Sole Proprietorship</button>
+        }
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="@Url.Action("Transaction", "Bank")">
+                <button type="button" style="padding: 10px 24px; background-color: darkgreen; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    Go to Transactions
+                </button>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

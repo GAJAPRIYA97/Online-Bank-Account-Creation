@@ -1,0 +1,184 @@
+﻿@model MiniBankApp.Models.EntityProfile
+@{
+    ViewBag.Title = "EntityProfile";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>EntityProfile</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, darkblue, red);
+            min-height: 100vh;
+            padding: 40px 16px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        form {
+            background: #fff;
+            width: 100%;
+            max-width: 520px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 24px;
+            color: #0B144A;
+        }
+
+        .form-field {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #0B144A;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: #f8f8f8;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+            input:focus,
+            textarea:focus {
+                outline: none;
+                border-color: #007BFF;
+                background-color: #eef9ff;
+                box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+            }
+
+        input:invalid {
+            border-color: red;
+        }
+
+        .error {
+            color: red;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .btn-back,
+        button[type="submit"] {
+            padding: 10px 20px;
+            font-size: 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 16px;
+        }
+
+        .btn-back {
+            background-color: #6c757d;
+            color: white;
+            margin-right: 12px;
+        }
+
+        button[type="submit"] {
+            background-color: #007BFF;
+            color: white;
+        }
+
+            .btn-back:hover,
+            button[type="submit"]:hover {
+                opacity: 0.9;
+            }
+    </style>
+
+</head>
+<body>
+    @using (Html.BeginForm("EntityProfile", "Bank", FormMethod.Post, new { autocomplete = "off", id = "entityForm" }))
+    {
+        @Html.AntiForgeryToken()
+        <h2>Entity Profile</h2>
+
+        <!-- Entity Name -->
+        <div class="form-field">
+            @Html.LabelFor(m => m.EntityName)
+            @Html.TextBoxFor(m => m.EntityName, new
+            {
+                @class = "form-control",
+                required = "required",
+                pattern = "^[A-Za-z0-9 &.,'-]{2,100}$",
+                title = "Entity name can include letters, numbers, spaces, &, . , - '",
+                autocomplete = "off"
+            })
+            @Html.ValidationMessageFor(m => m.EntityName, "", new { @class = "error" })
+        </div>
+
+        <!-- Incorporation Date -->
+        <div class="form-field">
+            @Html.LabelFor(m => m.IncorporationDate)
+            @Html.TextBoxFor(m => m.IncorporationDate, new
+            {
+                @class = "form-control",
+                type = "date",
+                required = "required",
+                max = DateTime.Now.ToString("yyyy-MM-dd"),
+                autocomplete = "off"
+            })
+            @Html.ValidationMessageFor(m => m.IncorporationDate, "", new { @class = "error" })
+        </div>
+
+        <!-- Incorporation Place -->
+        <div class="form-field">
+            @Html.LabelFor(m => m.IncorporationPlace)
+            @Html.TextBoxFor(m => m.IncorporationPlace, new
+            {
+                @class = "form-control",
+                required = "required",
+                pattern = "^[A-Za-z ]{2,100}$",
+                title = "Only alphabets and spaces allowed",
+                autocomplete = "off"
+            })
+            @Html.ValidationMessageFor(m => m.IncorporationPlace, "", new { @class = "error" })
+        </div>
+
+        <!-- Commencement Date -->
+        <div class="form-field">
+            @Html.LabelFor(m => m.CommencementDate)
+            @Html.TextBoxFor(m => m.CommencementDate, new
+            {
+                @class = "form-control",
+                type = "date",
+                required = "required",
+                max = DateTime.Now.ToString("yyyy-MM-dd"),
+                autocomplete = "off"
+            })
+            @Html.ValidationMessageFor(m => m.CommencementDate, "", new { @class = "error" })
+        </div>
+
+        <!-- Navigation -->
+        <div>
+            <a href="@Url.Action("Business", "Bank")" class="btn-back">Back</a>
+            <button type="submit">Next</button>
+        </div>
+    }
+</body>
+
+</html>

@@ -1,0 +1,498 @@
+﻿@model MiniBankApp.Models.KYCInfo
+@{
+    ViewBag.Title = "KYCverification";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>KYC Verification</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-image: linear-gradient(135deg, darkblue, red);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+
+        .form-container {
+            background: #ffffff;
+            padding: 30px 25px;
+            max-width: 420px;
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 24px;
+            color: #0B144A;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            color: #0B144A;
+            font-weight: bold;
+        }
+
+        input[type="tel"],
+        input[type="email"],
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .captcha-group {
+            margin-top: 15px;
+        }
+
+        .captcha-display {
+            display: flex;
+            align-items: center;
+            background: #f9e2e2;
+            padding: 8px 10px;
+            margin-top: 5px;
+            border-radius: 6px;
+        }
+
+        #captchaText {
+            font-family: monospace;
+            font-size: 20px;
+            letter-spacing: 2px;
+        }
+
+        #refreshCaptcha {
+            background: none;
+            border: none;
+            margin-left: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            color: #d6336c;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+
+            .button-group button,
+            #verifyOtpBtn {
+                padding: 10px 20px;
+                font-size: 15px;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                background: #0B144A;
+                color: white;
+                transition: background 0.3s;
+            }
+
+                .button-group button:hover,
+                #verifyOtpBtn:hover {
+                    background: #002244;
+                }
+
+        button[type="submit"] {
+            background-color: #e91e63;
+        }
+
+            button[type="submit"]:hover {
+                background-color: #c2185b;
+            }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .otp-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+            .otp-inputs input {
+                width: 45px;
+                height: 50px;
+                font-size: 22px;
+                text-align: center;
+                border: 1px solid #ccc;
+                border-radius: 6px;
+            }
+
+        .resend {
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+            .resend a {
+                color: #d6336c;
+                text-decoration: none;
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+        #verifyOtpBtn:disabled {
+            background: #bbb;
+            cursor: not-allowed;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="form-container">
+        <h2>KYC Verification</h2>
+        @using (Html.BeginForm("KYCverification", "Bank", FormMethod.Post, new { id = "kycForm", autocomplete = "off" }))
+        {
+            @Html.AntiForgeryToken()
+            <input type="text" style="display:none" autocomplete="off" />
+            <label>Mobile Number *</label>
+            @Html.TextBoxFor(m => m.MobileNumber, new
+            {
+                @class = "form-control",
+                required = "required",
+                pattern = @"[6-9]\d{9}",
+                title = "Enter a valid 10-digit Indian mobile number",
+                autocomplete = "off"
+            })
+
+            <label>Email *</label>
+             @Html.TextBoxFor(m => m.Email, new
+             {
+                 @class = "form-control",
+                 required = "required",
+                 type = "email",
+                 title = "Enter a valid email address",
+                 autocomplete = "new-email",
+                 id = "kyc_email",
+                 name = "kyc_email"
+             })
+
+            <div id="emailOtpModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-email">&times;</span>
+                    <h3>Enter Email OTP</h3>
+                    <div class="otp-inputs" id="email-otp-box">
+                        @for (int i = 0; i < 6; i++)
+                        {
+                            <input type="text" maxlength="1" class="email-otp" pattern="[0-9]" inputmode="numeric" autocomplete="off" required />
+                        }
+                    </div>
+                    <button id="verifyEmailOtpBtn" disabled>Verify Email OTP</button>
+                </div>
+            </div>
+
+
+            <div class="captcha-group">
+                <label>Enter Captcha *</label>
+                <div class="captcha-display">
+                    <span id="captchaText">A3bX2</span>
+                    <button type="button" id="refreshCaptcha" title="Refresh captcha">⟳</button>
+                </div>
+                <input type="text" name="captchaInput" placeholder="Enter captcha shown above"
+                       required pattern="^[A-Za-z0-9]{4,6}$"
+                       title="Captcha must match exactly as shown" autocomplete="off" />
+            </div>
+
+            <div class="button-group">
+                <button type="button" id="generateOtp">Generate OTP</button>
+                <button type="submit">Next</button>
+            </div>
+        }
+
+        <div id="otpModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3>Please Enter OTP</h3>
+                <div class="otp-inputs">
+                    @for (int i = 0; i < 6; i++)
+                    {
+                        <input type="text" maxlength="1" class="otp" pattern="[0-9]" inputmode="numeric" autocomplete="off" required />
+                    }
+                </div>
+                <p class="resend">Didn’t Receive OTP? <a href="#" id="resendOtp">Resend</a></p>
+                <button id="verifyOtpBtn" disabled>Verify OTP</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let otpVerified = false;
+
+        function makeCaptcha() {
+            const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
+            let text = "";
+            for (let i = 0; i < 6; i++) text += chars.charAt(Math.floor(Math.random() * chars.length));
+            return text;
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const captchaText = document.getElementById("captchaText");
+            const refresh = document.getElementById("refreshCaptcha");
+            const form = document.getElementById("kycForm");
+            const modal = document.getElementById('otpModal');
+            const verifyBtn = document.getElementById('verifyOtpBtn');
+            const otpInputs = document.querySelectorAll('.otp-inputs .otp');
+            const closeBtn = document.querySelector('.close');
+
+            function renderCaptcha() {
+                captchaText.textContent = makeCaptcha();
+            }
+
+            renderCaptcha();
+            refresh.addEventListener("click", renderCaptcha);
+
+            function openModal() { modal.style.display = 'flex'; otpInputs[0].focus(); }
+            function closeModal() { modal.style.display = 'none'; }
+            closeBtn.onclick = closeModal;
+            window.onclick = e => { if (e.target === modal) closeModal(); }
+
+            otpInputs.forEach((input, idx) => {
+                input.addEventListener('input', () => {
+                    if (input.value && idx < otpInputs.length - 1) {
+                        otpInputs[idx + 1].focus();
+                    }
+                    verifyBtn.disabled = ![...otpInputs].every(i => i.value.trim() !== '');
+                });
+                input.addEventListener('keydown', e => {
+                    if (e.key === 'Backspace' && !input.value && idx > 0) {
+                        otpInputs[idx - 1].focus();
+                    }
+                });
+            });
+
+            form.addEventListener("submit", function (e) {
+                if (!otpVerified) {
+                    e.preventDefault();
+                    alert("Please verify the OTP before submitting the form.");
+                }
+            });
+
+            document.getElementById("generateOtp").addEventListener("click", function () {
+                const rawMobile = document.querySelector("[name='MobileNumber']").value.trim();
+                if (!/^[6-9]\d{9}$/.test(rawMobile)) {
+                    alert("Please enter a valid 10-digit mobile number.");
+                    return;
+                }
+
+                // ✅ Use this:
+                const formattedMobile = rawMobile.startsWith("+91") ? rawMobile : "+91" + rawMobile;
+
+                const otpBtn = this;
+                otpBtn.disabled = true;
+                otpBtn.textContent = "Sending...";
+
+                fetch('/Bank/SendOtp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mobile: formattedMobile }) // ✅ Use formattedMobile here
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("OTP sent to your mobile.");
+                            openModal();
+                        } else {
+                            alert(data.message);
+                        }
+                        otpBtn.disabled = false;
+                        otpBtn.textContent = "Generate OTP";
+                    })
+                    .catch(err => {
+                        console.error("Error sending OTP:", err);
+                        otpBtn.disabled = false;
+                        otpBtn.textContent = "Generate OTP";
+                    });
+            });
+
+            verifyBtn.addEventListener("click", function () {
+                const otp = Array.from(otpInputs).map(i => i.value).join("");
+                fetch('/Bank/VerifyOtp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ otp: otp })
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            otpVerified = true;
+                            alert(data.message);
+                            closeModal();
+                        } else {
+                            alert(data.message);
+                            otpInputs.forEach(input => input.value = '');
+                            otpInputs[0].focus();
+                        }
+                    });
+            });
+
+            document.getElementById("resendOtp").addEventListener("click", function (e) {
+                e.preventDefault();
+                const rawMobile = document.querySelector("[name='MobileNumber']").value.trim();
+                const formattedMobile = rawMobile.startsWith("+91") ? rawMobile : "+91" + rawMobile;
+
+                fetch('/Bank/SendOtp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mobile: formattedMobile }) // ✅ Use here as well
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("OTP resent successfully.");
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                    .catch(() => {
+                        alert("Failed to resend OTP.");
+                    });
+            });
+
+        }); // ✅ Closes DOMContentLoaded
+
+
+        let emailOtpVerified = false;
+
+        const emailModal = document.getElementById('emailOtpModal');
+        const emailClose = document.querySelector('.close-email');
+        const emailInputs = document.querySelectorAll('.email-otp');
+        const emailVerifyBtn = document.getElementById('verifyEmailOtpBtn');
+
+        // Open modal
+        function openEmailModal() {
+            emailModal.style.display = 'flex';
+            emailInputs[0].focus();
+        }
+
+        // Close modal
+        function closeEmailModal() {
+            emailModal.style.display = 'none';
+        }
+
+        emailClose.onclick = closeEmailModal;
+        window.onclick = e => { if (e.target === emailModal) closeEmailModal(); };
+
+        // Auto-focus logic
+        emailInputs.forEach((input, idx) => {
+            input.addEventListener('input', () => {
+                if (input.value && idx < emailInputs.length - 1) {
+                    emailInputs[idx + 1].focus();
+                }
+                emailVerifyBtn.disabled = ![...emailInputs].every(i => i.value.trim() !== '');
+            });
+
+            input.addEventListener('keydown', e => {
+                if (e.key === 'Backspace' && !input.value && idx > 0) {
+                    emailInputs[idx - 1].focus();
+                }
+            });
+        });
+
+        // Send Email OTP on Generate OTP Click
+        document.getElementById("generateOtp").addEventListener("click", function () {
+            const email = document.querySelector("#kyc_email").value.trim();
+            if (!email) {
+                alert("Please enter your email.");
+                return;
+            }
+
+            fetch('/Bank/SendEmailOtp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        openEmailModal();
+                    } else {
+                        alert("Email OTP Failed: " + data.message);
+                    }
+                });
+        });
+
+        // Email OTP verify
+        emailVerifyBtn.addEventListener("click", function () {
+            const otp = Array.from(emailInputs).map(i => i.value).join("");
+            fetch('/Bank/VerifyEmailOtp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ otp: otp })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        emailOtpVerified = true;
+                        alert(data.message);
+                        closeEmailModal();
+                    } else {
+                        alert(data.message);
+                        emailInputs.forEach(input => input.value = '');
+                        emailInputs[0].focus();
+                    }
+                });
+        });
+
+        form.addEventListener("submit", function (e) {
+            if (!otpVerified || !emailOtpVerified) {
+                e.preventDefault();
+                alert("Please verify both Phone OTP and Email OTP before proceeding.");
+            }
+        });
+
+    </script> <!-- ✅ Closes the script -->
+
+</body>
+</html>
